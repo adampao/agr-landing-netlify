@@ -1,5 +1,4 @@
-[build]
-  publish = "/"
-  
-[forms]
-  beta-signup = { name = "Beta Signup" }
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
