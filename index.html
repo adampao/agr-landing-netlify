@@ -55,11 +55,8 @@
             </p>
             
             <!-- Email Signup Form -->
-            <form 
-    id="signup-form"
-    class="max-w-md mx-auto"
-    onsubmit="event.preventDefault(); handleSubmit(event);"
->
+            <form name="beta-signup" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="beta-signup" />
     <div class="flex flex-col sm:flex-row gap-4">
         <input 
             type="email" 
@@ -74,9 +71,6 @@
         >
             Join Beta
         </button>
-    </div>
-    <div id="success-message" class="mt-4 text-green-500 hidden">
-        Thanks for joining! We'll be in touch soon.
     </div>
 </form>
 
