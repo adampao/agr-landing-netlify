@@ -56,29 +56,55 @@
             
             <!-- Email Signup Form -->
             <form 
-               name="beta-signup"
-    method="POST"
-    netlify
-    action="/"
+    id="signup-form"
     class="max-w-md mx-auto"
-            >
-                <input type="hidden" name="form-name" value="beta-signup">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input 
-                        type="email" 
-                        name="email" 
-                        required
-                        placeholder="Enter your email"
-                        class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                    >
-                    <button 
-                        type="submit"
-                        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                    >
-                        Join Beta
-                    </button>
-                </div>
-            </form>
+    onsubmit="event.preventDefault(); handleSubmit(event);"
+>
+    <div class="flex flex-col sm:flex-row gap-4">
+        <input 
+            type="email" 
+            name="email" 
+            required
+            placeholder="Enter your email"
+            class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+        >
+        <button 
+            type="submit"
+            class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+            Join Beta
+        </button>
+    </div>
+    <div id="success-message" class="mt-4 text-green-500 hidden">
+        Thanks for joining! We'll be in touch soon.
+    </div>
+</form>
+
+<script>
+async function handleSubmit(event) {
+    const form = event.target;
+    const email = form.querySelector('input[type="email"]').value;
+    
+    try {
+        await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                'form-name': 'beta-signup',
+                'email': email
+            }).toString()
+        });
+        
+        form.reset();
+        document.getElementById('success-message').classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('success-message').classList.add('hidden');
+        }, 5000);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+</script>
             
             <p class="mt-4 text-sm text-gray-400">
                 Be among the first to experience the future of philosophical guidance.
