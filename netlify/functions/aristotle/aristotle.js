@@ -59,7 +59,7 @@ Encourage critical thinking
 Maintain philosophical depth while being engaging"""`;
 
 async function getEmbedding(text) {
-  const response = await fetch('/.netlify/functions/embed', {
+  const response = await fetch('https://agr-ai.netlify.app/functions/embed', {
     method: 'POST',
     body: JSON.stringify({ text })
   });
