@@ -1,8 +1,6 @@
 // netlify/functions/aristotle.js
 import OpenAI from 'openai';
-import { readFileSync } from 'fs';
-const embeddings = JSON.parse(readFileSync('./embeddings.json', 'utf8'));
-const chunks = Object.keys(embeddings);
+import fetch from 'node-fetch';
 
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
 Core Traits:
@@ -60,14 +58,57 @@ Keep responses balanced between theory and practice
 Encourage critical thinking
 Maintain philosophical depth while being engaging"""`;
 
-async function getEmbedding(text) {
-  const response = await fetch('https://agr-ai.netlify.app/.netlify/functions/embed', {
-    method: 'POST',
-    body: JSON.stringify({ text })
-  });
-  const data = await response.json();
-  return data.embedding;
+// NEW CODE
+import fetch from 'node-fetch'; // Ensure you have this import
+
+// Function to load embeddings from GitHub
+async function loadEmbeddingsFromGitHub() {
+  const embeddings = {};
+  
+  // IMPORTANT: Replace with YOUR GitHub username and repository name
+  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
+  
+  // List ALL your chunk filenames exactly as they appear in the GitHub repository
+  const chunkFiles = [
+    'embeddings_chunk_1.json',
+    'embeddings_chunk_2.json',
+    'embeddings_chunk_3.json',
+    'embeddings_chunk_4.json',
+    'embeddings_chunk_5.json',
+    'embeddings_chunk_6.json',
+    'embeddings_chunk_7.json',
+    'embeddings_chunk_8.json',
+    // Add ALL your chunk filenames here
+    // Example: 'embeddings_chunk_3.json', 'embeddings_chunk_4.json', etc.
+  ];
+
+  for (const filename of chunkFiles) {
+    try {
+      const response = await fetch(`${baseUrl}${filename}`);
+      const chunks = await response.json();
+      
+      chunks.forEach(chunk => {
+        embeddings[chunk.text] = chunk.vector;
+      });
+    } catch (error) {
+      console.error(`Error loading chunk ${filename}:`, error);
+    }
+  }
+
+  return embeddings;
 }
+
+// Initialize embeddings
+let embeddings = {};
+let chunks = [];
+
+async function initializeEmbeddings() {
+  embeddings = await loadEmbeddingsFromGitHub();
+  chunks = Object.keys(embeddings);
+}
+
+// Call this before your first use
+initializeEmbeddings();
 
 async function getMostRelevantChunk(question) {
   const questionEmbedding = await getEmbedding(question);
