@@ -58,9 +58,6 @@ Keep responses balanced between theory and practice
 Encourage critical thinking
 Maintain philosophical depth while being engaging"""`;
 
-// NEW CODE
-import fetch from 'node-fetch'; // Ensure you have this import
-
 // Function to load embeddings from GitHub
 async function loadEmbeddingsFromGitHub() {
   const embeddings = {};
@@ -133,6 +130,11 @@ function cosineSimilarity(a, b) {
 }
 
 export async function handler(event, context) {
+  // Ensure embeddings are loaded before processing
+  if (chunks.length === 0) {
+    await initializeEmbeddings();
+  }
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
