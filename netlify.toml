@@ -5,16 +5,12 @@
 [forms]
   beta-signup = { name = "Beta Signup" }
 
-[[
-redirects
-]]
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-[[
-redirects
-]]
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
