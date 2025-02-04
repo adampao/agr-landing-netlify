@@ -21,73 +21,69 @@
         }
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white">
 <!-- Previous head section remains the same -->
 
 
     
    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0 flex items-center">
-                    <span class="text-2xl font-bold text-blue-500">AGR</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
-                </div>
+   <nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex-shrink-0 flex items-center">
+                <span class="text-2xl font-bold text-blue-500">AGR</span>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen relative flex items-center justify-center px-4 pt-16">
-        <div class="absolute inset-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black"></div>
-        </div>
+   <!-- Hero Section -->
+   <section class="min-h-screen relative flex items-center justify-center px-4 py-20">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+        <h1 class="text-5xl md:text-7xl font-bold mb-8">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                Ancient Wisdom
+                <br>meets<br>
+                Modern Intelligence
+            </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
+            Transform your journey of personal growth with AI-powered philosophical guidance from history's greatest minds.
+        </p>
         
-        <div class="relative z-10 max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl md:text-7xl font-bold mb-8">
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-                    Ancient Wisdom
-                    <br>meets<br>
-                    Modern Intelligence
-                </span>
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-                Transform your journey of personal growth with AI-powered philosophical guidance from history's greatest minds.
-            </p>
-            
-            <!-- Email Signup Form -->
-            <form 
-                name="beta-signup"
-                method="POST"
-                data-netlify="true"
-                class="max-w-md mx-auto"
-            >
-                <input type="hidden" name="form-name" value="beta-signup">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input 
-                        type="email" 
-                        name="email" 
-                        required
-                        placeholder="Enter your email"
-                        class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                    >
-                    <button 
-                        type="submit"
-                        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                    >
-                        Join Beta
-                    </button>
-                </div>
-            </form>
-            
-            <p class="mt-4 text-sm text-gray-400">
-                Be among the first to experience the future of philosophical guidance.
-            </p>
-        </div>
-    </section>
+        <!-- Email Signup Form -->
+        <form 
+            name="waitlist" 
+            method="POST" 
+            data-netlify="true"
+            class="max-w-md mx-auto"
+        >
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input 
+                    type="email" 
+                    name="email"
+                    required
+                    placeholder="Enter your email"
+                    class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                >
+                <button 
+                    type="submit"
+                    class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Join Waitlist
+                </button>
+            </div>
+        </form>
+        
+        <p class="mt-4 text-sm text-gray-400">
+            Be among the first to experience the future of philosophical guidance.
+        </p>
+    </div>
+</section>
 
     <!-- Features Section -->
     <section id="features" class="py-20 bg-black/80">
@@ -96,19 +92,19 @@
             
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- The Journal -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
+                <div class="p-6 rounded-lg border border-blue-900 bg-black/50 hover:border-blue-500 transition-colors duration-200">
                     <h3 class="text-2xl font-bold mb-4 text-blue-400">The Journal</h3>
                     <p class="text-gray-300">Your personal space for reflection and growth, enhanced by AI-guided insights and daily wisdom.</p>
                 </div>
 
                 <!-- The Study -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
+                <div class="p-6 rounded-lg border border-blue-900 bg-black/50 hover:border-blue-500 transition-colors duration-200">
                     <h3 class="text-2xl font-bold mb-4 text-blue-400">The Study</h3>
                     <p class="text-gray-300">Dive deep into ancient Greek knowledge through interactive learning experiences and personalized pathways.</p>
                 </div>
 
                 <!-- The Agora -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
+                <div class="p-6 rounded-lg border border-blue-900 bg-black/50 hover:border-blue-500 transition-colors duration-200">
                     <h3 class="text-2xl font-bold mb-4 text-blue-400">The Agora</h3>
                     <p class="text-gray-300">Connect with a community of fellow seekers in philosophical discussions and shared growth.</p>
                 </div>
@@ -140,19 +136,19 @@
         </div>
     </section>
 
-   <!-- Footer -->
-    <footer class="py-8 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400">© 2025 AGR AI. All rights reserved.</p>
-                <div class="mt-4 md:mt-0">
-                    <a href="mailto:adam@agr-series.com" class="text-gray-400 hover:text-white transition-colors">
-                        adam@agr-series.com
-                    </a>
-                </div>
+  <!-- Footer -->
+  <footer class="py-8 bg-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400">© 2025 AGR AI. All rights reserved.</p>
+            <div class="mt-4 md:mt-0">
+                <a href="mailto:hello@agr-series.com" class="text-gray-400 hover:text-white transition-colors">
+                    adam@agr-series.com
+                </a>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 </body>
 </html>
 
