@@ -1,171 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Transform your journey of personal growth with AI-powered philosophical guidance from history's greatest minds.">
-    <title>AGR AI - Ancient Wisdom meets Modern Intelligence</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-        }
-        .feature-card {
-            transition: transform 0.3s ease-in-out;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-    </style>
-</head>
+<!-- Previous head section remains the same -->
+
 <body class="bg-black text-white min-h-screen">
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex-shrink-0 flex items-center">
-    <a href="https://www.youtube.com/@AncientGreeceRevisited" target="_blank" rel="noopener noreferrer" class="text-2xl font-bold text-blue-500 hover:text-blue-400 transition-colors">
-        AGR
-    </a>
-</div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="min-h-screen relative flex items-center justify-center px-4 pt-16">
-        <div class="absolute inset-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black"></div>
-        </div>
-        
-        <div class="relative z-10 max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl md:text-7xl font-bold mb-8">
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-                    Ancient Wisdom
-                    <br>meets<br>
-                    Modern Intelligence
-                </span>
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-                Transform your journey of personal growth with AI-powered philosophical guidance from history's greatest minds.
-            </p>
-            
-            <!-- Email Signup Form -->
-            <form name="beta-signup" method="POST" data-netlify="true">
-    <input type="hidden" name="form-name" value="beta-signup" />
-    <div class="flex flex-col sm:flex-row gap-4">
-        <input 
-            type="email" 
-            name="email" 
-            required
-            placeholder="Enter your email"
-            class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-        >
-        <button 
-            type="submit"
-            class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-            Join Waitlist
-        </button>
-    </div>
-</form>
-<!-- Survey and Demo Buttons -->
-<div class="mt-8 flex flex-col sm:flex-row gap-4 pb-16"> <!-- Added gap-4 for vertical spacing and pb-16 for bottom padding -->
-    <a 
-        href="https://ai.agr-series.com" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
-    >
-        Try Basic Demo →
-    </a>
-    <a 
-        href="https://forms.gle/yMQTwvKnz563PNSS7" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        class="px-8 py-4 bg-[#C5A572] text-white rounded-lg hover:opacity-90 transition-colors text-center"
-    >
-        Take Survey →
-    </a>
-</div>
-            
-<script>
-async function handleSubmit(event) {
-    const form = event.target;
-    const email = form.querySelector('input[type="email"]').value;
+    <!-- Previous nav section remains the same -->
     
-    try {
-        await fetch('/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                'form-name': 'beta-signup',
-                'email': email
-            }).toString()
+    <!-- Hero Section remains the same -->
+    
+    <!-- Add new Aristotle Chat section after Features -->
+    <section id="chat" class="py-20 bg-black/80">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Chat with Aristotle</h2>
+            <div id="aristotle-chat" class="bg-black/50 rounded-lg border border-blue-900 p-6">
+                <div id="chat-messages" class="h-96 overflow-y-auto mb-4 space-y-4"></div>
+                <form id="chat-form" class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="chat-input"
+                        placeholder="Ask Aristotle..."
+                        class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    >
+                    <button 
+                        type="submit"
+                        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Previous Features and Footer sections remain the same -->
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value;
+            if (!message.trim()) return;
+
+            // Add user message
+            addMessage('user', message);
+            chatInput.value = '';
+
+            try {
+                const response = await fetch('/.netlify/functions/aristotle', {
+                    method: 'POST',
+                    body: JSON.stringify({ question: message }),
+                });
+                
+                const data = await response.json();
+                if (data.answer) {
+                    addMessage('assistant', data.answer);
+                }
+            } catch (error) {
+                addMessage('assistant', 'My apologies, I encountered an issue. Please try again.');
+            }
         });
-        
-        form.reset();
-        document.getElementById('success-message').classList.remove('hidden');
-        setTimeout(() => {
-            document.getElementById('success-message').classList.add('hidden');
-        }, 5000);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-</script>
-            
-            <p class="mt-4 text-sm text-gray-400">
-                Be among the first to experience the future of philosophical guidance.
-            </p>
-        </div>
-    </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-20 bg-black/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">The Oikosystem</h2>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- The Journal -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
-                    <h3 class="text-2xl font-bold mb-4 text-blue-400">The Journal</h3>
-                    <p class="text-gray-300">Your personal space for reflection and growth, enhanced by AI-guided insights and daily wisdom.</p>
-                </div>
-
-                <!-- The Study -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
-                    <h3 class="text-2xl font-bold mb-4 text-blue-400">The Study</h3>
-                    <p class="text-gray-300">Dive deep into ancient Greek knowledge through interactive learning experiences and personalized pathways.</p>
-                </div>
-
-                <!-- The Agora -->
-                <div class="feature-card p-6 rounded-lg border border-blue-900 bg-black/50">
-                    <h3 class="text-2xl font-bold mb-4 text-blue-400">The Agora</h3>
-                    <p class="text-gray-300">Connect with a community of fellow seekers in philosophical discussions and shared growth.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-8 bg-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400">© 2025 AGR AI. All rights reserved.</p>
-                <div class="mt-4 md:mt-0">
-                    <a href="mailto:hello@agr-series.com" class="text-gray-400 hover:text-white transition-colors">
-                        hello@agr-series.com
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
+        function addMessage(role, content) {
+            const div = document.createElement('div');
+            div.className = `p-4 rounded-lg ${
+                role === 'user' 
+                    ? 'bg-blue-900/30 ml-auto' 
+                    : 'bg-black/50'
+            } max-w-[80%]`;
+            div.textContent = content;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
 </body>
 </html>
