@@ -1,6 +1,8 @@
 // netlify/functions/aristotle.js
 import OpenAI from 'openai';
-import { chunks } from './chunks.js';
+import { readFileSync } from 'fs';
+const embeddings = JSON.parse(readFileSync('./embeddings.json', 'utf8'));
+const chunks = Object.keys(embeddings);
 
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
 Core Traits:
@@ -73,8 +75,7 @@ async function getMostRelevantChunk(question) {
   let mostRelevantChunk = chunks[0];
 
   for (const chunk of chunks) {
-    const chunkEmbedding = await getEmbedding(chunk);
-    const similarity = cosineSimilarity(questionEmbedding, chunkEmbedding);
+    const similarity = cosineSimilarity(questionEmbedding, embeddings[chunk]);
     if (similarity > maxSimilarity) {
       maxSimilarity = similarity;
       mostRelevantChunk = chunk;
