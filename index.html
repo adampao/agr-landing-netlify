@@ -176,19 +176,39 @@
 
     <script>
         const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
 
-        chatForm.addEventListener('submit', async (e) => {
+function addMessage(role, content) {
+    console.log(`Adding ${role} message:`, content);
+    const div = document.createElement('div');
+    div.className = `p-4 rounded-lg ${
+        role === 'user' 
+            ? 'bg-blue-900/30 ml-auto' 
+            : 'bg-black/50'
+    } max-w-[80%]`;
+    div.textContent = content;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatForm.addEventListener('submit', async (e) => {
+    console.log('Form submitted');
     e.preventDefault();
     const message = chatInput.value;
-    if (!message.trim()) return;
+    console.log('Message:', message);
+    
+    if (!message.trim()) {
+        console.log('Empty message');
+        return;
+    }
 
     // Add user message
     addMessage('user', message);
     chatInput.value = '';
 
     try {
+        console.log('Sending fetch request');
         const response = await fetch('/.netlify/functions/aristotle', {
             method: 'POST',
             headers: {
@@ -196,6 +216,8 @@
             },
             body: JSON.stringify({ question: message }),
         });
+        
+        console.log('Response received:', response);
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -205,6 +227,8 @@
         }
 
         const data = await response.json();
+        console.log('Response data:', data);
+        
         if (data.answer) {
             addMessage('assistant', data.answer);
         } else {
