@@ -7,12 +7,12 @@
 
   [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["openai"]
+  included_files = ["netlify/functions/embeddings_chunks/**"]
 
 [functions.aristotle]
-  timeout = 30
-  memory = 1024
-  maxDuration = 30
+  timeout = 60
+  memory = 2048
+  
 
 [[redirects]]
   from = "/api/*"
