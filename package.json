@@ -2,10 +2,10 @@
   "name": "agr-ai-site",
   "version": "1.0.0",
   "description": "AGR AI Website",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "openai": "^4.0.0",
     "papaparse": "^5.4.1",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.9"
   }
 }
