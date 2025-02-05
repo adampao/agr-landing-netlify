@@ -2,6 +2,33 @@
 const OpenAI = require('openai');
 const fetch = require('node-fetch');
 
+// Cache for embeddings
+let embeddingsCache = null;
+
+async function loadEmbeddingsFromGitHub() {
+  if (embeddingsCache) {
+    return embeddingsCache;
+  }
+
+  const embeddings = {};
+  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
+  
+  try {
+    const response = await fetch(`${baseUrl}embeddings_chunk_1.json`);
+    const chunks = await response.json();
+    
+    chunks.forEach(chunk => {
+      embeddings[chunk.text] = chunk.vector;
+    });
+
+    embeddingsCache = embeddings;
+    return embeddings;
+  } catch (error) {
+    console.error('Error loading embeddings:', error);
+    return {};
+  }
+}
+
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
 Core Traits:
 
