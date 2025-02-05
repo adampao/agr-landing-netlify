@@ -40,7 +40,7 @@
 </nav>
 
    <!-- Hero Section -->
-   <section class="min-h-screen relative flex items-center justify-center px-4 py-20">
+   <section class="min-h-screen relative flex items-center justify-center px-4 py-24 sm:py-32">
     <div class="absolute inset-0">
         <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black"></div>
     </div>
@@ -59,27 +59,27 @@
         
         <!-- Email Signup Form -->
         <form 
-            name="waitlist" 
-            method="POST" 
-            data-netlify="true"
-            class="max-w-md mx-auto"
-        >
-            <div class="flex flex-col sm:flex-row gap-4">
-                <input 
-                    type="email" 
-                    name="email"
-                    required
-                    placeholder="Enter your email"
-                    class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                >
-                <button 
-                    type="submit"
-                    class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                    Join Waitlist
-                </button>
-            </div>
-        </form>
+        name="waitlist" 
+        method="POST" 
+        data-netlify="true"
+        class="w-full max-w-md mx-auto px-4"
+    >
+        <div class="flex flex-col gap-4">
+            <input 
+                type="email" 
+                name="email"
+                required
+                placeholder="Enter your email"
+                class="w-full px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            >
+            <button 
+                type="submit"
+                class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+                Join Waitlist
+            </button>
+        </div>
+    </form>
         
         <p class="mt-4 text-sm text-gray-400">
             Be among the first to experience the future of philosophical guidance.
@@ -88,23 +88,23 @@
 </section>
 
 
-<div class="mt-8 flex flex-col sm:flex-row gap-4 pb-16"> <!-- Added gap-4 for vertical spacing and pb-16 for bottom padding -->
+<div class="fixed bottom-0 left-0 right-0 flex flex-col sm:flex-row justify-center gap-4 p-4 bg-black/80 backdrop-blur-sm">
     <a 
         href="https://ai.agr-series.com" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+        class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
     >
         Try Demo →
     </a>
     <a 
-        href="https://forms.gle/yMQTwvKnz563PNSS7" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        class="px-8 py-4 bg-[#C5A572] text-white rounded-lg hover:opacity-90 transition-colors text-center"
-    >
-        Take Survey →
-    </a>
+    href="https://forms.gle/yMQTwvKnz563PNSS7" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    class="w-full sm:w-auto px-8 py-4 bg-[#C5A572] text-white rounded-lg hover:opacity-90 transition-colors text-center"
+>
+    Take Survey →
+</a>
 </div>
 
     <!-- Features Section -->
@@ -135,21 +135,21 @@
     </section>
     
     <!-- Add new Aristotle Chat section after Features -->
-    <section id="chat" class="py-20 bg-black/80">
-        <div class="max-w-4xl mx-auto px-4">
+    <section id="chat" class="py-12 sm:py-20 bg-black/80 px-4">
+        <div class="max-w-4xl mx-auto">
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Chat with Aristotle</h2>
-            <div id="aristotle-chat" class="bg-black/50 rounded-lg border border-blue-900 p-6">
-                <div id="chat-messages" class="h-96 overflow-y-auto mb-4 space-y-4"></div>
-                <form id="chat-form" class="flex gap-2">
+            <div id="aristotle-chat" class="bg-black/50 rounded-lg border border-blue-900 p-4 sm:p-6">
+                <div id="chat-messages" class="h-72 sm:h-96 overflow-y-auto mb-4 space-y-4"></div>
+                <form id="chat-form" class="flex flex-col sm:flex-row gap-2">
                     <input 
                         type="text" 
                         id="chat-input"
                         placeholder="Ask Aristotle..."
-                        class="flex-1 px-6 py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                        class="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-lg bg-white/10 border border-blue-900 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     >
                     <button 
                         type="submit"
-                        class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         Send
                     </button>
