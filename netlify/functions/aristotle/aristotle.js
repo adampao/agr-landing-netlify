@@ -4,36 +4,35 @@ const fetch = require('node-fetch');
 
 // Cache for embeddings
 let embeddingsCache = null;
-const MAX_RETRIES = 3;
 
+// Simplified embeddings loading
 async function loadEmbeddingsFromGitHub() {
-  if (embeddingsCache) {
-    return embeddingsCache;
-  }
+  if (embeddingsCache) return embeddingsCache;
 
-  const embeddings = {};
-  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
-  
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      const response = await fetch(`${baseUrl}embeddings_chunk_1.json`, {
-        timeout: 5000
-      });
-      
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const chunks = await response.json();
-      chunks.forEach(chunk => {
-        embeddings[chunk.text] = chunk.vector;
-      });
-
-      embeddingsCache = embeddings;
-      return embeddings;
-    } catch (error) {
-      console.error(`Attempt ${i + 1} failed:`, error);
-      if (i === MAX_RETRIES - 1) return {};
-      await new Promise(resolve => setTimeout(resolve, 1000));
+  try {
+    // Load a smaller subset of embeddings for faster response
+    const response = await fetch('https://raw.githubusercontent.com/adampao/politics-embeddings/main/embeddings_chunk_1.json', {
+      timeout: 3000 // 3 second timeout
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    const chunks = await response.json();
+    const embeddings = {};
+    
+    // Only load the first 100 embeddings for faster processing
+    chunks.slice(0, 100).forEach(chunk => {
+      embeddings[chunk.text] = chunk.vector;
+    });
+
+    embeddingsCache = embeddings;
+    return embeddings;
+  } catch (error) {
+    console.error('Error loading embeddings:', error);
+    // Return empty embeddings rather than failing
+    return {};
   }
 }
 
@@ -140,10 +139,32 @@ async function initializeEmbeddings() {
 }
 
 async function getMostRelevantChunk(question) {
-  // If embeddings are not loaded, load them first
+  const embeddings = await loadEmbeddingsFromGitHub();
+  const chunks = Object.keys(embeddings);
+  
   if (chunks.length === 0) {
-    await initializeEmbeddings();
+    return "I apologize, but I am having trouble accessing my knowledge base at the moment. Let me answer based on my general knowledge.";
   }
+
+  // Simple keyword matching as fallback
+  const keywords = question.toLowerCase().split(' ');
+  let bestChunk = chunks[0];
+  let bestScore = 0;
+
+  chunks.forEach(chunk => {
+    const score = keywords.filter(word => 
+      chunk.toLowerCase().includes(word)
+    ).length;
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestChunk = chunk;
+    }
+  });
+
+  return bestChunk;
+}
+  
 
   // Create an embedding for the question using an external service
   let questionEmbedding;
@@ -172,7 +193,7 @@ async function getMostRelevantChunk(question) {
     }
   }
   return mostRelevantChunk;
-}
+
 
 function cosineSimilarity(a, b) {
   const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0);
@@ -182,12 +203,6 @@ function cosineSimilarity(a, b) {
 }
 
 exports.handler = async function(event, context) {
-
-  // Ensure embeddings are loaded before processing
-  if (chunks.length === 0) {
-    await initializeEmbeddings();
-  }
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -204,8 +219,10 @@ exports.handler = async function(event, context) {
       model: "gpt-4",
       messages: [
         { role: "system", content: SYSTEM_MESSAGE },
-        { role: "user", content: `Text: ${relevantChunk}\n\nQuestion: ${question}` }
-      ]
+        { role: "user", content: `Context: ${relevantChunk}\n\nQuestion: ${question}` }
+      ],
+      max_tokens: 300, // Limit response length
+      temperature: 0.7
     });
 
     return {
@@ -213,13 +230,13 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ answer: response.choices[0].message.content })
     };
   } catch (error) {
-    console.error('Error in Aristotle function:', error);
+    console.error('Error:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ 
-        error: error.message,
-        details: error.response ? JSON.stringify(error.response.data) : 'No additional details' 
+        error: "I apologize, but I am having trouble processing your request. Please try again.",
+        details: error.message 
       })
     };
   }
-}
+};
