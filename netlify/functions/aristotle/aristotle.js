@@ -1,6 +1,6 @@
 // netlify/functions/aristotle.js
-import OpenAI from 'openai';
-import fetch from 'node-fetch';
+const OpenAI = require('openai');
+const fetch = require('node-fetch');
 
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
 Core Traits:
@@ -81,7 +81,7 @@ async function loadEmbeddingsFromGitHub() {
 
   for (const filename of chunkFiles) {
     try {
-      const response = await fetch(`${baseUrl}${filename}`);
+      const response = await nodeFetch(`${baseUrl}${filename}`);
       const chunks = await response.json();
       
       chunks.forEach(chunk => {
@@ -104,11 +104,28 @@ async function initializeEmbeddings() {
   chunks = Object.keys(embeddings);
 }
 
-// Call this before your first use
-initializeEmbeddings();
-
 async function getMostRelevantChunk(question) {
-  const questionEmbedding = await getEmbedding(question);
+  // If embeddings are not loaded, load them first
+  if (chunks.length === 0) {
+    await initializeEmbeddings();
+  }
+
+  // Create an embedding for the question using an external service
+  let questionEmbedding;
+  try {
+    const response = await nodeFetch('https://agr-ai.netlify.app/.netlify/functions/embed', {
+      method: 'POST',
+      body: JSON.stringify({ text: question })
+    });
+    const data = await response.json();
+    questionEmbedding = data.embedding;
+  } catch (error) {
+    console.error('Error getting question embedding:', error);
+    // Fallback to the first chunk if embedding fails
+    return chunks[0];
+  }
+
+  // Find most relevant chunk using cosine similarity
   let maxSimilarity = -Infinity;
   let mostRelevantChunk = chunks[0];
 
@@ -129,7 +146,8 @@ function cosineSimilarity(a, b) {
   return dotProduct / (magnitudeA * magnitudeB);
 }
 
-export async function handler(event, context) {
+exports.handler = async function(event, context) {
+
   // Ensure embeddings are loaded before processing
   if (chunks.length === 0) {
     await initializeEmbeddings();
