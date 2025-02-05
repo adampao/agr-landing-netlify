@@ -67,36 +67,20 @@ Maintain philosophical depth while being engaging"""`;
 
 // Function to load embeddings from GitHub
 async function loadEmbeddingsFromGitHub() {
+  if (embeddingsCache) return embeddingsCache;
+
   const embeddings = {};
-  
-  // IMPORTANT: Replace with YOUR GitHub username and repository name
   const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
   
-  // List ALL your chunk filenames exactly as they appear in the GitHub repository
-  const chunkFiles = [
-    'embeddings_chunk_1.json',
-    'embeddings_chunk_2.json',
-    'embeddings_chunk_3.json',
-    'embeddings_chunk_4.json',
-    'embeddings_chunk_5.json',
-    'embeddings_chunk_6.json',
-    'embeddings_chunk_7.json',
-    'embeddings_chunk_8.json',
-    // Add ALL your chunk filenames here
-    // Example: 'embeddings_chunk_3.json', 'embeddings_chunk_4.json', etc.
-  ];
-
-  for (const filename of chunkFiles) {
-    try {
-      const response = await fetch(`${baseUrl}${filename}`);
-      const chunks = await response.json();
-      
-      chunks.forEach(chunk => {
-        embeddings[chunk.text] = chunk.vector;
-      });
-    } catch (error) {
-      console.error(`Error loading chunk ${filename}:`, error);
-    }
+  try {
+    const response = await fetch(`${baseUrl}embeddings_chunk_1.json`);
+    const chunks = await response.json();
+    chunks.forEach(chunk => {
+      embeddings[chunk.text] = chunk.vector;
+    });
+    embeddingsCache = embeddings;
+  } catch (error) {
+    console.error('Error loading embeddings:', error);
   }
 
   return embeddings;
