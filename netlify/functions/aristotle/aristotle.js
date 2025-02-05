@@ -2,28 +2,24 @@
 const OpenAI = require('openai');
 const fetch = require('node-fetch');
 
-// Cache for embeddings
+// Simplified response when embeddings aren't available
+const DEFAULT_RESPONSE = `I am Aristotle, and I'll draw from my general knowledge to answer your question.`;
+
 let embeddingsCache = null;
 
-// Simplified embeddings loading
 async function loadEmbeddingsFromGitHub() {
   if (embeddingsCache) return embeddingsCache;
 
   try {
-    // Load a smaller subset of embeddings for faster response
     const response = await fetch('https://raw.githubusercontent.com/adampao/politics-embeddings/main/embeddings_chunk_1.json', {
-      timeout: 3000 // 3 second timeout
+      timeout: 2000
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) return null;
     
     const chunks = await response.json();
     const embeddings = {};
-    
-    // Only load the first 100 embeddings for faster processing
-    chunks.slice(0, 100).forEach(chunk => {
+    chunks.slice(0, 50).forEach(chunk => {
       embeddings[chunk.text] = chunk.vector;
     });
 
@@ -31,8 +27,7 @@ async function loadEmbeddingsFromGitHub() {
     return embeddings;
   } catch (error) {
     console.error('Error loading embeddings:', error);
-    // Return empty embeddings rather than failing
-    return {};
+    return null;
   }
 }
 
@@ -213,22 +208,27 @@ exports.handler = async function(event, context) {
 
   try {
     const { question } = JSON.parse(event.body);
-    const relevantChunk = await getMostRelevantChunk(question);
     
+    // Quick response without embeddings
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: SYSTEM_MESSAGE },
-        { role: "user", content: `Context: ${relevantChunk}\n\nQuestion: ${question}` }
+        { role: "user", content: question }
       ],
-      max_tokens: 300, // Limit response length
+      max_tokens: 150,
       temperature: 0.7
     });
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
       body: JSON.stringify({ answer: response.choices[0].message.content })
     };
+
   } catch (error) {
     console.error('Error:', error);
     return {
