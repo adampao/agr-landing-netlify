@@ -10,8 +10,8 @@
   included_files = ["netlify/functions/embeddings_chunks/**"]
 
 [functions.aristotle]
-  timeout = 60
-  memory = 2048
+  timeout = 360
+  memory = 4096
   
 
 [[redirects]]
