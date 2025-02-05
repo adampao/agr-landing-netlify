@@ -7,28 +7,7 @@ const DEFAULT_RESPONSE = `I am Aristotle, and I'll draw from my general knowledg
 
 let embeddingsCache = null;
 
-async function loadAllEmbeddings() {
-  if (embeddingsCache) return embeddingsCache;
 
-  const embeddings = {};
-  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
-  const files = Array.from({length: 8}, (_, i) => `embeddings_chunk_${i + 1}.json`);
-
-  for (const file of files) {
-    try {
-      const response = await fetch(`${baseUrl}${file}`);
-      const chunks = await response.json();
-      chunks.forEach(chunk => {
-        embeddings[chunk.text] = chunk.vector;
-      });
-    } catch (error) {
-      console.error(`Error loading ${file}:`, error);
-    }
-  }
-
-  embeddingsCache = embeddings;
-  return embeddings;
-}
 
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
 Core Traits:
@@ -127,10 +106,6 @@ async function loadEmbeddingsFromGitHub() {
 let embeddings = {};
 let chunks = [];
 
-async function initializeEmbeddings() {
-  embeddings = await loadEmbeddingsFromGitHub();
-  chunks = Object.keys(embeddings);
-}
 
 async function getMostRelevantChunk(question) {
   const embeddings = await loadEmbeddingsFromGitHub();
@@ -140,54 +115,43 @@ async function getMostRelevantChunk(question) {
     return "I apologize, but I am having trouble accessing my knowledge base at the moment. Let me answer based on my general knowledge.";
   }
 
-  // Simple keyword matching as fallback
-  const keywords = question.toLowerCase().split(' ');
-  let bestChunk = chunks[0];
-  let bestScore = 0;
-
-  chunks.forEach(chunk => {
-    const score = keywords.filter(word => 
-      chunk.toLowerCase().includes(word)
-    ).length;
-    
-    if (score > bestScore) {
-      bestScore = score;
-      bestChunk = chunk;
-    }
-  });
-
-  return bestChunk;
-}
-  
-
-  // Create an embedding for the question using an external service
-  let questionEmbedding;
   try {
-    const response = await nodeFetch('https://agr-ai.netlify.app/.netlify/functions/embed', {
+    const response = await fetch('https://agr-ai.netlify.app/.netlify/functions/embed', {
       method: 'POST',
       body: JSON.stringify({ text: question })
     });
     const data = await response.json();
-    questionEmbedding = data.embedding;
-  } catch (error) {
-    console.error('Error getting question embedding:', error);
-    // Fallback to the first chunk if embedding fails
-    return chunks[0];
-  }
+    const questionEmbedding = data.embedding;
 
-  // Find most relevant chunk using cosine similarity
-  let maxSimilarity = -Infinity;
-  let mostRelevantChunk = chunks[0];
+    let maxSimilarity = -Infinity;
+    let mostRelevantChunk = chunks[0];
 
-  for (const chunk of chunks) {
-    const similarity = cosineSimilarity(questionEmbedding, embeddings[chunk]);
-    if (similarity > maxSimilarity) {
-      maxSimilarity = similarity;
-      mostRelevantChunk = chunk;
+    for (const chunk of chunks) {
+      const similarity = cosineSimilarity(questionEmbedding, embeddings[chunk]);
+      if (similarity > maxSimilarity) {
+        maxSimilarity = similarity;
+        mostRelevantChunk = chunk;
+      }
     }
-  }
-  return mostRelevantChunk;
+    return mostRelevantChunk;
+  } catch (error) {
+    // Fallback to keyword matching if embedding fails
+    const keywords = question.toLowerCase().split(' ');
+    let bestChunk = chunks[0];
+    let bestScore = 0;
 
+    chunks.forEach(chunk => {
+      const score = keywords.filter(word => 
+        chunk.toLowerCase().includes(word)
+      ).length;
+      if (score > bestScore) {
+        bestScore = score;
+        bestChunk = chunk;
+      }
+    });
+    return bestChunk;
+  }
+}
 
 function cosineSimilarity(a, b) {
   const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0);
@@ -200,20 +164,14 @@ exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
-    const embeddings = await loadAllEmbeddings();
     const { question } = JSON.parse(event.body);
-
-    // Find relevant text
-    const chunks = Object.keys(embeddings);
-    const relevantText = chunks.find(chunk => 
-      chunk.toLowerCase().includes(question.toLowerCase())
-    ) || chunks[0];
+    const relevantText = await getMostRelevantChunk(question);
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: "You are Aristotle. Use the provided text from Politics to inform your answers." },
+        { role: "system", content: SYSTEM_MESSAGE },
         { role: "user", content: `Context: ${relevantText}\n\nQuestion: ${question}` }
       ]
     });
