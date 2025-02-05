@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 
 // Cache for embeddings
 let embeddingsCache = null;
+const MAX_RETRIES = 3;
 
 async function loadEmbeddingsFromGitHub() {
   if (embeddingsCache) {
@@ -13,19 +14,26 @@ async function loadEmbeddingsFromGitHub() {
   const embeddings = {};
   const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
   
-  try {
-    const response = await fetch(`${baseUrl}embeddings_chunk_1.json`);
-    const chunks = await response.json();
-    
-    chunks.forEach(chunk => {
-      embeddings[chunk.text] = chunk.vector;
-    });
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      const response = await fetch(`${baseUrl}embeddings_chunk_1.json`, {
+        timeout: 5000
+      });
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const chunks = await response.json();
+      chunks.forEach(chunk => {
+        embeddings[chunk.text] = chunk.vector;
+      });
 
-    embeddingsCache = embeddings;
-    return embeddings;
-  } catch (error) {
-    console.error('Error loading embeddings:', error);
-    return {};
+      embeddingsCache = embeddings;
+      return embeddings;
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed:`, error);
+      if (i === MAX_RETRIES - 1) return {};
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 }
 
