@@ -69,21 +69,20 @@ Maintain philosophical depth while being engaging"""`;
 async function loadEmbeddingsFromGitHub() {
   if (embeddingsCache) return embeddingsCache;
 
-  const embeddings = {};
-  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
-  
   try {
-    const response = await fetch(`${baseUrl}embeddings_chunk_1.json`);
-    const chunks = await response.json();
-    chunks.forEach(chunk => {
-      embeddings[chunk.text] = chunk.vector;
+    // Local file path
+    const embeddings_file = require('./embeddings_chunk_1.json');
+    embeddingsCache = {};
+    
+    embeddings_file.forEach(chunk => {
+      embeddingsCache[chunk.text] = chunk.vector;
     });
-    embeddingsCache = embeddings;
+    
+    return embeddingsCache;
   } catch (error) {
     console.error('Error loading embeddings:', error);
+    return {};
   }
-
-  return embeddings;
 }
 
 // Initialize embeddings
