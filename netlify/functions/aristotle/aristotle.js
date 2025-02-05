@@ -88,7 +88,7 @@ async function loadEmbeddingsFromGitHub() {
 
   for (const filename of chunkFiles) {
     try {
-      const response = await nodeFetch(`${baseUrl}${filename}`);
+      const response = await fetch(`${baseUrl}${filename}`);
       const chunks = await response.json();
       
       chunks.forEach(chunk => {
