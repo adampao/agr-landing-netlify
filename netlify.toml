@@ -5,20 +5,21 @@
 [forms]
   beta-signup = { name = "Beta Signup" }
 
+  [functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["openai"]
+
+[functions.aristotle]
+  timeout = 30
+  memory = 1024
+  maxDuration = 30
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-[[redirects]]
+  [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-  [functions]
-  node_bundler = "esbuild"
-  included_files = ["netlify/functions/embeddings_chunks/**"]
-
-[functions.aristotle]
-  timeout = 30
-
