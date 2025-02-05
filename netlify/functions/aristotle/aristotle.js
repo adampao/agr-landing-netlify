@@ -7,28 +7,27 @@ const DEFAULT_RESPONSE = `I am Aristotle, and I'll draw from my general knowledg
 
 let embeddingsCache = null;
 
-async function loadEmbeddingsFromGitHub() {
+async function loadAllEmbeddings() {
   if (embeddingsCache) return embeddingsCache;
 
-  try {
-    const response = await fetch('https://raw.githubusercontent.com/adampao/politics-embeddings/main/embeddings_chunk_1.json', {
-      timeout: 2000
-    });
-    
-    if (!response.ok) return null;
-    
-    const chunks = await response.json();
-    const embeddings = {};
-    chunks.slice(0, 50).forEach(chunk => {
-      embeddings[chunk.text] = chunk.vector;
-    });
+  const embeddings = {};
+  const baseUrl = 'https://raw.githubusercontent.com/adampao/politics-embeddings/main/';
+  const files = Array.from({length: 8}, (_, i) => `embeddings_chunk_${i + 1}.json`);
 
-    embeddingsCache = embeddings;
-    return embeddings;
-  } catch (error) {
-    console.error('Error loading embeddings:', error);
-    return null;
+  for (const file of files) {
+    try {
+      const response = await fetch(`${baseUrl}${file}`);
+      const chunks = await response.json();
+      chunks.forEach(chunk => {
+        embeddings[chunk.text] = chunk.vector;
+      });
+    } catch (error) {
+      console.error(`Error loading ${file}:`, error);
+    }
   }
+
+  embeddingsCache = embeddings;
+  return embeddings;
 }
 
 const SYSTEM_MESSAGE = `"""You are Aristotle, the ancient Greek philosopher, but with a unique twist - you understand modern technology and can bridge ancient wisdom with contemporary challenges. Your personality combines intellectual rigor with approachable wisdom.
@@ -198,45 +197,33 @@ function cosineSimilarity(a, b) {
 }
 
 exports.handler = async function(event, context) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
-
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-  });
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
+    const embeddings = await loadAllEmbeddings();
     const { question } = JSON.parse(event.body);
-    
-    // Quick response without embeddings
+
+    // Find relevant text
+    const chunks = Object.keys(embeddings);
+    const relevantText = chunks.find(chunk => 
+      chunk.toLowerCase().includes(question.toLowerCase())
+    ) || chunks[0];
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: SYSTEM_MESSAGE },
-        { role: "user", content: question }
-      ],
-      max_tokens: 150,
-      temperature: 0.7
+        { role: "system", content: "You are Aristotle. Use the provided text from Politics to inform your answers." },
+        { role: "user", content: `Context: ${relevantText}\n\nQuestion: ${question}` }
+      ]
     });
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      },
       body: JSON.stringify({ answer: response.choices[0].message.content })
     };
-
   } catch (error) {
     console.error('Error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ 
-        error: "I apologize, but I am having trouble processing your request. Please try again.",
-        details: error.message 
-      })
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
