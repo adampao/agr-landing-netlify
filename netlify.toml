@@ -17,7 +17,7 @@
 
   [functions]
   node_bundler = "esbuild"
-  timeout = 30
+  included_files = ["netlify/functions/embeddings_chunks/**"]
 
 [functions.aristotle]
   timeout = 30
